@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Πακέτο 10: Ψηφιακή Αφήγηση</title>
+    <style>
+        body {font-family: 'Comfortaa', sans-serif; background-color: black; color: #fff; text-align: center; margin: 0; padding: 0;}
+        h1 {background-color: black; color: gold; padding: 20px; font-size: 25px;}
+        .creator, .director {background-color: black; color: gold; padding: 10px; font-size: 18px;}
+        .emojis {font-size: 30px; margin-top: 20px;}
+        .score-box {position: absolute; top: 20px; right: 20px; font-size: 20px; font-weight: bold;}
+        .question-container {margin: 30px; max-width: 800px; margin: auto; text-align: left;}
+        .question {margin: 15px 0; padding: 15px; font-size: 120%; background-color: #0b3d91; color: gold; border-radius: 10px; font-weight: bold; text-shadow: 1px 1px 0 rgba(0,0,0,0.8), -1px -1px 0 rgba(255,255,255,0.2);}
+        .question-number {text-decoration: underline; display: block; margin-bottom: 5px;}
+        .answer {font-size: 18px; margin: 5px 0; padding: 10px; border-radius: 5px; cursor: pointer; background-color: #777; color: white; border: none; width: 100%;}
+        .answer:hover {background-color: #999;}
+        .correct {background-color: green !important;}
+        .incorrect {background-color: red !important;}
+        .final-score {font-size: 24px; color: gold; margin-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="creator">Δημιουργία/Επιμέλεια: Παναγιώτης Δόμβρος (CC BY-NC)</div>
+    <div class="director">Εκπαιδευτικός Αγγλικών - Θεατρολόγος</div>
+    <div class="director">Επιμορφωτής Τ.Π.Ε</div>
+    <div class="director">Διευθυντής 1ου Γυμνασίου Πυλαίας</div>
+    <h1>Πακέτο 10: Ψηφιακή Αφήγηση</h1>
+    <div class="emojis">💻 📚 🎓 🌐</div>
+    <div class="score-box">Σκορ: <span id="score">0</span> / 100</div>
+    <div class="question-container" id="question-container"></div>
+    <audio id="successAudio" src="success-sound.mp3"></audio>
+    <audio id="failAudio" src="fail-sound.mp3"></audio>
+    <script>
+        const questions = [
+            {q:'Ποια από τις παρακάτω δεν είναι μία από τις τρεις κύριες κατηγορίες ψηφιακών ιστοριών;', a:['α) Προσωπικές αφηγήσεις','β) Ιστορικά ντοκιμαντέρ','γ) Επιστημονικές αναφορές'], c:2},
+            {q:'Ποιος ρόλος ομάδας είναι υπεύθυνος για τη συγγραφή και διόρθωση του σεναρίου;', a:['α) Συντονιστής','β) Σεναριογράφος','γ) Τεχνικός'], c:1},
+            {q:'Ποιο από τα παρακάτω δεν ανήκει στα Επτά Βασικά Στοιχεία της ψηφιακής αφήγησης;', a:['α) Ερώτηση-κλειδί','β) Δομή κεφαλαίων','γ) Οικονομία περιεχομένου'], c:1},
+            {q:'Τι γίνεται στη φάση Pre-production;', a:['α) Επεξεργασία τελικού βίντεο','β) Storyboard και συγγραφή κειμένου','γ) Δημοσίευση στο διαδίκτυο'], c:1},
+            {q:'Ποια εργαλεία χρησιμοποιούνται για εικόνες ελεύθερων πνευματικών δικαιωμάτων;', a:['α) Pics4Learning, Pexels, Flickr','β) Powtoon, Prezi, Movie Maker','γ) Storybird, Canva, Docs'], c:0},
+            {q:'Ποιο βήμα δεν περιλαμβάνεται στο Production;', a:['α) Ηχογράφηση αφήγησης','β) Προσθήκη πολυμέσων','γ) Συγγραφή script'], c:2},
+            {q:'Ποιο όφελος δεν συνδέεται με ψηφιακή αφήγηση στην τάξη;', a:['α) Ενεργός ρόλος μαθητών','β) Μείωση χρόνου δημιουργίας','γ) Ενίσχυση πολυγραμματισμών'], c:1},
+            {q:'Σε ποιο στοιχείο αναφέρεται η φωνή του δημιουργού;', a:['α) Voice','β) Pacing','γ) Soundtrack'], c:0},
+            {q:'Τι σημαίνει «dramatic question»;', a:['α) Ερώτηση-κλειδί για απάντηση','β) Τίτλος βίντεο','γ) Ερώτηση θεατών'], c:0},
+            {q:'Ποιος ρόλος επιλέγει εργαλεία επεξεργασίας;', a:['α) Υπεύθυνος υλικού','β) Σεναριογράφος','γ) Τεχνικός'], c:2},
+            {q:'Ποιος δεν αποτελεί περιορισμό ψηφιακής αφήγησης;', a:['α) Χρονοβόρα διαδικασία','β) Υπερφόρτωση πολυμέσων','γ) Αύξηση κινήτρων'], c:2},
+            {q:'Τι επιλέγουμε στο storyboard;', a:['α) Πλαίσια πολυμέσων','β) Τίτλο εργασίας','γ) Τελική μορφή αρχείου'], c:0},
+            {q:'Πού δημοσιεύεται συνήθως το τελικό έργο;', a:['α) YouTube playlist','β) Τάξη και διαδίκτυο','γ) Προσωπικό αρχείο'], c:1},
+            {q:'Τι δεν ανήκει στο Post-production;', a:['α) Επεξεργασία βίντεο','β) Δημιουργία φακέλων','γ) Δημοσίευση ιστορίας'], c:1},
+            {q:'Ποιο αποθετήριο ανήκει στη Φωτόδεντρο;', a:['α) Φωτόδεντρο Βίντεο','β) Prezi','γ) Powtoon'], c:0},
+            {q:'Σε ποιον ρόλο ελέγχονται οι πηγές περιεχομένου;', a:['α) Συντονιστής','β) Υπεύθυνος υλικού','γ) Σεναριογράφος'], c:1},
+            {q:'Η ηχογράφηση από μαθητές αναπτύσσει;', a:['α) Μόνο ψηφιακές δεξιότητες','β) Φωνητικό γραμματισμό','γ) Μόνο γραφή'], c:1},
+            {q:'Ποιο εργαλείο δημιουργεί GIFs;', a:['α) GIPHY','β) Classroom Clipart','γ) Pics4Learning'], c:0},
+            {q:'Τι δεν επηρεάζει το pacing;', a:['α) Διάρκεια μεταβάσεων','β) Ταχύτητα γεγονότων','γ) Μέγεθος αρχείου'], c:2},
+            {q:'Ποιο όφελος αφορά τον προφορικό λόγο;', a:['α) Βελτίωση ομιλίας','β) Μείωση κόστους','γ) Ταχύτητα συγγραφής'], c:0},
+            {q:'Πόσες λέξεις για 3′ αφήγηση;', a:['α) Έως 400','β) Έως 1000','γ) Έως 150'], c:0},
+            {q:'Τι σημαίνει «economy»;', a:['α) Κόστος λογισμικού','β) Ισορροπία στοιχείων','γ) Οικονομικοί όροι'], c:1},
+            {q:'Ποιο δεν είναι πολυμεσικό εργαλείο;', a:['α) Audio/video editors','β) Στατιστικές βάσεις','γ) Storyboard πλατφόρμες'], c:1},
+            {q:'Ποιος όρος δηλώνει cross-curricular;', a:['α) Cross-curricular','β) Monolingual','γ) Scaffolding'], c:0},
+            {q:'Ποιο στοιχείο συμβάλλει κυρίως στην συναισθηματική εμπλοκή του ακροατή;', a:['α) Οικονομία περιεχομένου','β) Συναίσθημα (emotional content)','γ) Οπτική γωνία (point of view)'], c:1}
+        ];
+        let score=0, idx=0;
+        const container=document.getElementById('question-container');
+        function showQuestion(){
+            if(idx>=questions.length){
+                container.innerHTML=`<div class="final-score">Τέλος! Σκορ: ${score} / ${questions.length*4}</div>`;
+                return;
+            }
+            const {q,a} = questions[idx];
+            let html=`<div class="question"><span class="question-number">Ερώτηση ${idx+1}:</span>${q}</div>`;
+            a.forEach((opt,i)=>{ html+=`<button class="answer" data-index="${i}">${opt}</button>`; });
+            container.innerHTML=html;
+            document.querySelectorAll('.answer').forEach(btn=>btn.addEventListener('click',onAnswer));
+        }
+        function onAnswer(e){
+            const selected=+e.currentTarget.dataset.index;
+            const {c}=questions[idx];
+            const audio=selected===c?document.getElementById('successAudio'):document.getElementById('failAudio');
+            audio.play();
+            if(selected===c) score+=4;
+            document.getElementById('score').textContent=score;
+            document.querySelectorAll('.answer').forEach((btn,i)=>{ btn.disabled=true; if(i===c) btn.classList.add('correct'); else if(i===selected) btn.classList.add('incorrect'); });
+            idx++;
+            setTimeout(showQuestion,800);
+        }
+        showQuestion();
+    </script>
+</body>
+</html>
 
